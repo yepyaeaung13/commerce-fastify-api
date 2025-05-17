@@ -1,4 +1,4 @@
-import Fastify from "fastify";
+import Fastify, { FastifyRequest, FastifyReply } from "fastify";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
@@ -6,11 +6,47 @@ import { Options } from "../server";
 import userRoutes from "./routes/users";
 import productRoutes from "./routes/products";
 import { orderRoutes } from "./routes/orders";
+import fastifyBasicAuth from '@fastify/basic-auth';
+import fastifyJwt from "@fastify/jwt";
+import { config } from "./config/config";
 
 export async function buildServer(options: Options) {
     const fastify = Fastify(options).withTypeProvider<TypeBoxTypeProvider>();
 
     // Register plugins
+    await fastify.register(fastifyBasicAuth, {
+        validate: async (
+            username: string,
+            password: string,
+            req: FastifyRequest,
+            reply: FastifyReply
+        ): Promise<void> => {
+            const user = {
+                username: "admin",
+                password: "password"
+            }
+
+            if (user.username !== username || user.password !== password) {
+                throw new Error('Unauthorized');
+            }
+        },
+        authenticate: true
+    });
+
+    // Register JWT for authentication
+    await fastify.register(fastifyJwt, {
+        secret: config.jwtSecret!
+    })
+
+    // decorator for auth middleware
+    fastify.decorate("authenticate", async function (request: FastifyRequest, reply: FastifyReply) {
+        try {
+            await request.jwtVerify();
+        } catch (err) {
+            reply.send(err);
+        }
+    });
+
     await fastify.register(swagger, {
         swagger: {
             info: {
@@ -34,14 +70,20 @@ export async function buildServer(options: Options) {
         }
     });
 
-    // Register Swagger UI
+    // Register Swagger UI with basic auth
     await fastify.register(swaggerUi, {
         routePrefix: '/docs',
         uiConfig: {
             docExpansion: 'list',
             deepLinking: false
         },
-        staticCSP: true
+        staticCSP: true,
+        uiHooks: {
+            onRequest: (request, reply, done) => {
+                // Use fastify's basicAuth hook manually
+                fastify.basicAuth(request, reply, done);
+            }
+        }
     });
 
     // Register routes

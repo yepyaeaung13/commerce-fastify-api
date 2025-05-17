@@ -1,6 +1,5 @@
 import { FastifyInstance } from 'fastify'
 import { Type } from '@sinclair/typebox'
-import { authenticate } from '../middleware/auth'
 import * as ProductController from '../controllers/products'
 
 export default async function productRoutes(fastify: FastifyInstance) {
@@ -38,7 +37,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
   fastify.post(
     '/',
     {
-      preHandler: [authenticate],
+      preHandler: [fastify.authenticate],
       schema: {
         tags: ['Products'],
         body: Type.Object({
@@ -59,7 +58,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
   fastify.put(
     '/:id',
     {
-      preHandler: [authenticate],
+      preHandler: [fastify.authenticate],
       schema: {
         tags: ['Products'],
         params: Type.Object({
@@ -83,7 +82,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
   fastify.patch(
     '/:id/stock',
     {
-      preHandler: [authenticate],
+      preHandler: [fastify.authenticate],
       schema: {
         tags: ['Products'],
         params: Type.Object({
@@ -101,7 +100,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
   fastify.delete(
     '/:id',
     {
-      preHandler: [authenticate],
+      preHandler: [fastify.authenticate],
       schema: {
         tags: ['Products'],
         params: Type.Object({

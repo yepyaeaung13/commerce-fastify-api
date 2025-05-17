@@ -27,6 +27,11 @@ class UserService {
             where: { email }
         });
     }
+    async findUserByEmail(email) {
+        return prisma.user.findUnique({
+            where: { email }
+        });
+    }
     async create(data) {
         return prisma.user.create({
             data: data

@@ -46,6 +46,20 @@ export declare class UserService {
         createdAt: Date;
         updatedAt: Date;
     } | null>;
+    findUserByEmail(email: string): Promise<{
+        id: string;
+        name: string;
+        email: string;
+        password: string;
+        age: number;
+        phoneNumber: string | null;
+        address: Prisma.JsonValue | null;
+        preferences: Prisma.JsonValue | null;
+        role: import(".prisma/client").$Enums.UserRole;
+        status: import(".prisma/client").$Enums.UserStatus;
+        createdAt: Date;
+        updatedAt: Date;
+    } | null>;
     create(data: Partial<User>): Promise<{
         id: string;
         name: string;

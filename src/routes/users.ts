@@ -1,6 +1,5 @@
 import { FastifyInstance } from 'fastify'
 import { Type } from '@sinclair/typebox'
-import { authenticate } from '../middleware/auth'
 import * as UserController from '../controllers/users'
 
 export default async function userRoutes(fastify: FastifyInstance) {
@@ -8,7 +7,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
   fastify.get(
     '/',
     {
-      preHandler: [authenticate],
+      preHandler: [fastify.authenticate],
       schema: {
         tags: ['Users'],
         querystring: Type.Object({
@@ -24,7 +23,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
   fastify.get(
     '/:id',
     {
-      preHandler: [authenticate],
+      preHandler: [fastify.authenticate],
       schema: {
         tags: ['Users'],
         params: Type.Object({
@@ -35,9 +34,19 @@ export default async function userRoutes(fastify: FastifyInstance) {
     UserController.getUserById
   )
 
+  fastify.post('/login', {
+    schema: {
+      tags: ['Users'],
+      body: Type.Object({
+        email: Type.String({ format: 'email' }),
+        password: Type.String({ minLength: 8, maxLength: 100 }),
+      }),
+    },
+}, UserController.loginUser)
+
   // Create new user (public - registration)
   fastify.post(
-    '/',
+    '/register',
     {
       schema: {
         tags: ['Users'],
@@ -59,7 +68,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
   fastify.put(
     '/:id',
     {
-      preHandler: [authenticate],
+      preHandler: [fastify.authenticate],
       schema: {
         tags: ['Users'],
         params: Type.Object({
@@ -84,7 +93,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
   fastify.delete(
     '/:id',
     {
-      preHandler: [authenticate],
+      preHandler: [fastify.authenticate],
       schema: {
         tags: ['Users'],
         params: Type.Object({

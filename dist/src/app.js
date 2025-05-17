@@ -10,9 +10,22 @@ const swagger_ui_1 = __importDefault(require("@fastify/swagger-ui"));
 const users_1 = __importDefault(require("./routes/users"));
 const products_1 = __importDefault(require("./routes/products"));
 const orders_1 = require("./routes/orders");
+const basic_auth_1 = __importDefault(require("@fastify/basic-auth"));
 async function buildServer(options) {
     const fastify = (0, fastify_1.default)(options).withTypeProvider();
     // Register plugins
+    await fastify.register(basic_auth_1.default, {
+        validate: async (username, password, req, reply) => {
+            const user = {
+                username: "admin",
+                password: "password"
+            };
+            if (user.username !== username || user.password !== password) {
+                throw new Error('Unauthorized');
+            }
+        },
+        authenticate: true
+    });
     await fastify.register(swagger_1.default, {
         swagger: {
             info: {
@@ -35,14 +48,20 @@ async function buildServer(options) {
             ]
         }
     });
-    // Register Swagger UI
+    // Register Swagger UI with basic auth
     await fastify.register(swagger_ui_1.default, {
         routePrefix: '/docs',
         uiConfig: {
             docExpansion: 'list',
             deepLinking: false
         },
-        staticCSP: true
+        staticCSP: true,
+        uiHooks: {
+            onRequest: (request, reply, done) => {
+                // Use fastify's basicAuth hook manually
+                fastify.basicAuth(request, reply, done);
+            }
+        }
     });
     // Register routes
     await fastify.register(users_1.default, { prefix: "/api/users" });

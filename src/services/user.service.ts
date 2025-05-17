@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 import type { User, PaginationParams } from '../types'
+import { comparePasswords } from '../utils/helpers'
 
 const prisma = new PrismaClient()
 
@@ -30,6 +31,24 @@ export class UserService {
     return prisma.user.findUnique({
       where: { email }
     })
+  }
+
+  async login(email: string, password: string) {
+    
+    const user = await prisma.user.findUnique({
+      where: { email }
+    })
+    if (!user) {
+      return null
+    }
+
+    // Assuming you have a method to verify the password
+    const isValidPassword = await comparePasswords(password, user.password)
+    if (!isValidPassword) {
+      return null
+    }
+
+    return user
   }
 
   async create(data: Partial<User>) {

@@ -4,6 +4,7 @@
     "module": "CommonJS",
     "moduleResolution": "Node",
     "esModuleInterop": true,
+    "types": ["./src/types/fastify.d.ts"],
     "strict": true,
     "outDir": "dist",
     "sourceMap": true,

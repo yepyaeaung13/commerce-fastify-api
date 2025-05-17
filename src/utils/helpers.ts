@@ -1,3 +1,5 @@
+import fastifyJwt from '@fastify/jwt'
+import { config } from '../config/config'
 import { PaginationParams, ApiResponse } from '../types'
 import bcrypt from 'bcrypt'
 
@@ -28,26 +30,34 @@ export const createPagination = (params: PaginationParams) => {
   }
 }
 
-export const formatResponse = <T>(
-  data: T,
-  error?: string,
-  meta?: ApiResponse<T>['meta']
-): ApiResponse<T> => {
-  if (error) {
-    return {
-      status: false,
-      error,
-    }
-  }
+export const successResponse = <T>(data: T, message?: string): ApiResponse<T> => ({
+  status: true,
+  data,
+  message,
+});
 
-  return {
-    status: true,
-    data,
-    meta,
-  }
-}
+export const successResponseWithMeta = <T>(data: T, meta?: ApiResponse<T>['meta'], message?: string): ApiResponse<T> => ({
+  status: true,
+  data,
+  meta,
+  message,
+});
+
+export const errorResponse = <T>(error: string): ApiResponse<T> => ({
+  status: false,
+  error,
+});
 
 export const sanitizeUser = (user: any) => {
   const { password, ...sanitizedUser } = user
   return sanitizedUser
+}
+export const generateToken = async (
+  user: any,
+  fastify: any
+): Promise<string> => {
+  return fastify.jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    { expiresIn: config.jwtExpiresIn }
+  )
 }

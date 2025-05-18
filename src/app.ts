@@ -15,10 +15,7 @@ export async function buildServer(options: Options) {
     const fastify = Fastify(options).withTypeProvider<TypeBoxTypeProvider>();
 
     // Register CORS (← Add this block)
-    await fastify.register(cors, {
-        origin: true, // Allow all origins (or specify array/domain)
-        credentials: true
-    });
+    await fastify.register(cors, config.cors);
 
     // Register plugins
     await fastify.register(fastifyBasicAuth, {

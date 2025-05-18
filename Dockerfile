@@ -19,7 +19,12 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run generate && npm run build
+
+COPY prisma ./prisma
+
+RUN npx prisma generate
+
+RUN npm run build
 
 ################################################################################
 # Final minimal image

@@ -6,9 +6,9 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "dev": "ts-node-dev server.ts",
-    "postinstall": "prisma generate",
+    "postinstall": "",
     "update:packages": "npx npm-check-updates -u",
-    "db:gen": "prisma generate",
+    "generate": "prisma generate",
     "db:studio": "prisma studio",
     "migrate": "prisma migrate dev",
     "migrate:prod": "prisma migrate deploy"

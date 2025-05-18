@@ -15,11 +15,11 @@ RUN npm ci --omit=dev
 # Build the app
 FROM base as build
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build
+RUN npm run generate && npm run build
 
 ################################################################################
 # Final minimal image

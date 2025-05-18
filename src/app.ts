@@ -41,12 +41,12 @@ export async function buildServer(options: Options) {
     await fastify.register(fastifyJwt, {
         secret: config.jwtAccessSecret,
         namespace: 'access'
-      });
-      
-      await fastify.register(fastifyJwt, {
+    });
+
+    await fastify.register(fastifyJwt, {
         secret: config.jwtRefreshSecret,
         namespace: 'refresh'
-      });
+    });
 
     // decorator for auth middleware
     fastify.decorate("authenticate", async function (request: FastifyRequest, reply: FastifyReply) {
@@ -58,42 +58,35 @@ export async function buildServer(options: Options) {
     });
 
     await fastify.register(swagger, {
-        swagger: {
+        mode: 'dynamic',
+        openapi: {
+            openapi: '3.0.0',
             info: {
-                title: "Commerce fastify API",
-                description: "E-commerce API with Fastify and TypeScript",
-                version: "1.0.0"
+                title: 'Commerce Fastify API',
+                version: '1.0.0',
+                description: 'E-commerce API with Fastify and TypeScript',
             },
-            externalDocs: {
-                url: "https://swagger.io",
-                description: "Find more info here"
-            },
-            host: "commerce-fastify-api.onrender.com",
-            schemes: ["https"],
-            consumes: ["application/json"],
-            produces: ["application/json"],
+            servers: [
+                {
+                    url: 'https://commerce-fastify-api.onrender.com/api', // ✅ your prod base URL
+                    description: 'Production server',
+                },
+                {
+                    url: 'http://localhost:3000/api', // ✅ optional dev server
+                    description: 'Local development server',
+                },
+            ],
             tags: [
                 { name: 'Users', description: 'User management endpoints' },
                 { name: 'Products', description: 'Product management endpoints' },
-                { name: 'Orders', description: 'Order management endpoints' }
-            ]
-        }
+                { name: 'Orders', description: 'Order management endpoints' },
+            ],
+        },
     });
 
-    // Register Swagger UI with basic auth
     await fastify.register(swaggerUi, {
         routePrefix: '/docs',
-        uiConfig: {
-            docExpansion: 'list',
-            deepLinking: false
-        },
         staticCSP: true,
-        uiHooks: {
-            onRequest: (request, reply, done) => {
-                // Use fastify's basicAuth hook manually
-                fastify.basicAuth(request, reply, done);
-            }
-        }
     });
 
     // Register routes

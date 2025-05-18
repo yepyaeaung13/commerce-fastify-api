@@ -64,7 +64,12 @@ export default async function userRoutes(fastify: FastifyInstance) {
     UserController.createUser
   )
   // Refresh access token (public)
-  fastify.post('/refresh-token', UserController.refreshAccessToken);
+  fastify.post('/refresh-token', {
+    preHandler: [fastify.authenticate],
+    schema: {
+      tags: ['Users'],
+    }
+  }, UserController.refreshAccessToken);
 
   // Update user (protected)
   fastify.put(

@@ -67,7 +67,8 @@ export async function buildServer(options: Options) {
             externalDocs: {
                 url: "https://swagger.io",
                 description: "Find more info here"
-            },  
+            },
+            host: "https://commerce-fastify-api.onrender.com",
             consumes: ["application/json"],
             produces: ["application/json"],
             tags: [

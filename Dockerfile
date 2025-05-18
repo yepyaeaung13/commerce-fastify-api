@@ -23,7 +23,7 @@ RUN npm run generate && npm run build
 
 ################################################################################
 # Final minimal image
-FROM base as final
+FROM base as prod
 
 ENV NODE_ENV=production
 USER node

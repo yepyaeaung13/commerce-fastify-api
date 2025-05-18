@@ -60,7 +60,7 @@ export async function buildServer(options: Options) {
     await fastify.register(swagger, {
         swagger: {
             info: {
-                title: "Commerce API",
+                title: "Commerce fastify API",
                 description: "E-commerce API with Fastify and TypeScript",
                 version: "1.0.0"
             },
@@ -68,7 +68,8 @@ export async function buildServer(options: Options) {
                 url: "https://swagger.io",
                 description: "Find more info here"
             },
-            host: "https://commerce-fastify-api.onrender.com",
+            host: "commerce-fastify-api.onrender.com",
+            schemes: ["https"],
             consumes: ["application/json"],
             produces: ["application/json"],
             tags: [

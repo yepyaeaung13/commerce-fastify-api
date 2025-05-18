@@ -9,6 +9,7 @@ WORKDIR /usr/src/app
 FROM base as deps
 
 COPY package*.json ./
+COPY prisma ./prisma 
 RUN npm ci --omit=dev
 
 ################################################################################
@@ -19,10 +20,6 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-
-COPY prisma ./prisma
-
-RUN npx prisma generate
 
 RUN npm run build
 

@@ -58,6 +58,6 @@ export const generateToken = async (
 ): Promise<string> => {
   return fastify.jwt.sign(
     { id: user.id, email: user.email, role: user.role },
-    { expiresIn: config.jwtExpiresIn }
+    { expiresIn: config.jwtAccessExpiresIn }
   )
 }

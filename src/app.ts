@@ -9,9 +9,16 @@ import { orderRoutes } from "./routes/orders";
 import fastifyBasicAuth from '@fastify/basic-auth';
 import fastifyJwt from "@fastify/jwt";
 import { config } from "./config/config";
+import cors from '@fastify/cors';
 
 export async function buildServer(options: Options) {
     const fastify = Fastify(options).withTypeProvider<TypeBoxTypeProvider>();
+
+    // Register CORS (← Add this block)
+    await fastify.register(cors, {
+        origin: true, // Allow all origins (or specify array/domain)
+        credentials: true
+    });
 
     // Register plugins
     await fastify.register(fastifyBasicAuth, {
@@ -35,13 +42,19 @@ export async function buildServer(options: Options) {
 
     // Register JWT for authentication
     await fastify.register(fastifyJwt, {
-        secret: config.jwtSecret!
-    })
+        secret: config.jwtAccessSecret,
+        namespace: 'access'
+      });
+      
+      await fastify.register(fastifyJwt, {
+        secret: config.jwtRefreshSecret,
+        namespace: 'refresh'
+      });
 
     // decorator for auth middleware
     fastify.decorate("authenticate", async function (request: FastifyRequest, reply: FastifyReply) {
         try {
-            await request.jwtVerify();
+            await request.accessJwtVerify();
         } catch (err) {
             reply.send(err);
         }
@@ -57,9 +70,7 @@ export async function buildServer(options: Options) {
             externalDocs: {
                 url: "https://swagger.io",
                 description: "Find more info here"
-            },
-            host: "localhost:3000",
-            schemes: ["http"],
+            },  
             consumes: ["application/json"],
             produces: ["application/json"],
             tags: [

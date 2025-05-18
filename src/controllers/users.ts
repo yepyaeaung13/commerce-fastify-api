@@ -46,9 +46,14 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
     }
 
     // Assuming you have a method to generate a JWT token
-    const token = await reply.jwtSign(
+    const accessToken = await reply.accessJwtSign(
       { id: user.id, email: user.email },
-      { expiresIn: config.jwtExpiresIn } 
+      { expiresIn: config.jwtAccessExpiresIn } 
+    )
+
+    const refreshToken = await reply.refreshJwtSign(
+      { id: user.id, email: user.email },
+      { expiresIn: config.jwtRefreshExpiresIn } 
     )
 
     const userInfo: UserInfoResponse = {
@@ -59,7 +64,7 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
       status: user.status
     }
     
-    return reply.send(successResponse({ userInfo, token }, 'Login successful'))
+    return reply.send(successResponse({ userInfo, accessToken, refreshToken }, 'Login successful'))
   } catch (error: any) {
     return reply.status(500).send(errorResponse( error?.message || 'Internal server error'))
   }
@@ -73,9 +78,14 @@ export async function createUser(request: FastifyRequest, reply: FastifyReply) {
     userData.password = hashedPassword;
     const user = await userService.create(userData)
 
-    const token = await reply.jwtSign(
+    const accessToken = await reply.accessJwtSign(
       { id: user.id, email: user.email },
-      { expiresIn: config.jwtExpiresIn } 
+      { expiresIn: config.jwtAccessExpiresIn } 
+    )
+
+    const refreshToken = await reply.refreshJwtSign(
+      { id: user.id, email: user.email },
+      { expiresIn: config.jwtRefreshExpiresIn } 
     )
 
     const userInfo: UserInfoResponse = {
@@ -86,11 +96,36 @@ export async function createUser(request: FastifyRequest, reply: FastifyReply) {
       status: user.status
     }
 
-    return reply.send(successResponse({ userInfo, token }, 'User created successfully'))
+    return reply.send(successResponse({ userInfo, accessToken, refreshToken }, 'User created successfully'))
   } catch (error: any) {
     return reply.status(500).send(errorResponse(error?.message || 'Internal server error'))
   }
 }
+
+export async function refreshAccessToken(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    // Verify the refresh token from the request headers or body (depending on your design)
+    await request.refreshJwtVerify();
+
+    // Extract user info from refresh token
+    const user = request.refreshUser;
+
+    if (!user) {
+      return reply.status(401).send(errorResponse('Invalid refresh token'));
+    }
+
+    // Sign a new access token (shorter expiry)
+    const newAccessToken = await reply.accessJwtSign(
+      { id: user.id, email: user.email },
+      { expiresIn: config.jwtAccessExpiresIn }
+    );
+
+    return reply.send(successResponse({ accessToken: newAccessToken }, 'New access token issued'));
+  } catch (error: any) {
+    return reply.status(401).send(errorResponse(error.message || 'Invalid or expired refresh token'));
+  }
+}
+
 
 export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
   try {

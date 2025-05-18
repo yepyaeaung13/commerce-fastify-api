@@ -3,8 +3,10 @@ dotenv.config()
 
 export const config = {
   port: process.env.PORT,
-  jwtSecret: process.env.JWT_SECRET,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN,
+  jwtAccessSecret: process.env.JWT_SECRET!,
+  jwtRefreshSecret: process.env.JWT_SECRET!,
+  jwtAccessExpiresIn: process.env.JWT_EXPIRES_IN!,
+  jwtRefreshExpiresIn: process.env.JWT_EXPIRES_IN!,
   database: {
     url: process.env.DATABASE_URL,
   },

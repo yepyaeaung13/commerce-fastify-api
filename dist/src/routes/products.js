@@ -35,7 +35,6 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = productRoutes;
 const typebox_1 = require("@sinclair/typebox");
-const auth_1 = require("../middleware/auth");
 const ProductController = __importStar(require("../controllers/products"));
 async function productRoutes(fastify) {
     // Get all products (public)
@@ -60,7 +59,7 @@ async function productRoutes(fastify) {
     }, ProductController.getProductById);
     // Create new product (protected, admin only)
     fastify.post('/', {
-        preHandler: [auth_1.authenticate],
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Products'],
             body: typebox_1.Type.Object({
@@ -76,7 +75,7 @@ async function productRoutes(fastify) {
     }, ProductController.createProduct);
     // Update product (protected, admin only)
     fastify.put('/:id', {
-        preHandler: [auth_1.authenticate],
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Products'],
             params: typebox_1.Type.Object({
@@ -95,7 +94,7 @@ async function productRoutes(fastify) {
     }, ProductController.updateProduct);
     // Update product stock (protected, admin only)
     fastify.patch('/:id/stock', {
-        preHandler: [auth_1.authenticate],
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Products'],
             params: typebox_1.Type.Object({
@@ -108,7 +107,7 @@ async function productRoutes(fastify) {
     }, ProductController.updateProductStock);
     // Delete product (protected, admin only)
     fastify.delete('/:id', {
-        preHandler: [auth_1.authenticate],
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Products'],
             params: typebox_1.Type.Object({

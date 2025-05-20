@@ -3,10 +3,10 @@ import type { User, PaginationParams } from '../types';
 export declare class UserService {
     findAll(params: PaginationParams): Promise<{
         data: {
+            password: string;
             id: string;
             name: string;
             email: string;
-            password: string;
             age: number;
             phoneNumber: string | null;
             address: Prisma.JsonValue | null;
@@ -19,10 +19,10 @@ export declare class UserService {
         total: number;
     }>;
     findById(id: string): Promise<{
+        password: string;
         id: string;
         name: string;
         email: string;
-        password: string;
         age: number;
         phoneNumber: string | null;
         address: Prisma.JsonValue | null;
@@ -33,10 +33,10 @@ export declare class UserService {
         updatedAt: Date;
     } | null>;
     findByEmail(email: string): Promise<{
+        password: string;
         id: string;
         name: string;
         email: string;
-        password: string;
         age: number;
         phoneNumber: string | null;
         address: Prisma.JsonValue | null;
@@ -46,11 +46,11 @@ export declare class UserService {
         createdAt: Date;
         updatedAt: Date;
     } | null>;
-    findUserByEmail(email: string): Promise<{
+    login(email: string, password: string): Promise<{
+        password: string;
         id: string;
         name: string;
         email: string;
-        password: string;
         age: number;
         phoneNumber: string | null;
         address: Prisma.JsonValue | null;
@@ -61,10 +61,10 @@ export declare class UserService {
         updatedAt: Date;
     } | null>;
     create(data: Partial<User>): Promise<{
+        password: string;
         id: string;
         name: string;
         email: string;
-        password: string;
         age: number;
         phoneNumber: string | null;
         address: Prisma.JsonValue | null;
@@ -75,10 +75,10 @@ export declare class UserService {
         updatedAt: Date;
     }>;
     update(id: string, data: Prisma.UserUpdateInput): Promise<{
+        password: string;
         id: string;
         name: string;
         email: string;
-        password: string;
         age: number;
         phoneNumber: string | null;
         address: Prisma.JsonValue | null;
@@ -89,10 +89,10 @@ export declare class UserService {
         updatedAt: Date;
     }>;
     delete(id: string): Promise<{
+        password: string;
         id: string;
         name: string;
         email: string;
-        password: string;
         age: number;
         phoneNumber: string | null;
         address: Prisma.JsonValue | null;

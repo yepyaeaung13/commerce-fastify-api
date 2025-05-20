@@ -24,14 +24,17 @@ export type ApiResponse<T> = {
     status: boolean;
     data?: T;
     error?: string;
+    message?: string;
     meta?: {
-        page?: number;
-        limit?: number;
-        total?: number;
+        page: number;
+        limit: number;
+        total: number;
     };
 };
-declare module 'fastify' {
-    interface FastifyRequest {
-        user?: JWTPayload;
-    }
-}
+export type UserInfoResponse = {
+    id: string;
+    name: string;
+    email: string;
+    role: UserRole;
+    status: UserStatus;
+};

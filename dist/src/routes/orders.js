@@ -57,6 +57,7 @@ const OrderStatusSchema = type_provider_typebox_1.Type.Object({
 async function orderRoutes(fastify) {
     // Get all orders
     fastify.get("/", {
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Orders'],
             querystring: type_provider_typebox_1.Type.Optional(type_provider_typebox_1.Type.Object({
@@ -70,6 +71,7 @@ async function orderRoutes(fastify) {
     }, orderController.getOrders);
     // Get order by ID
     fastify.get("/:id", {
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Orders'],
             params: OrderParamsSchema,
@@ -80,6 +82,7 @@ async function orderRoutes(fastify) {
     }, orderController.getOrderById);
     // Create new order
     fastify.post("/", {
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Orders'],
             body: OrderSchema,
@@ -93,6 +96,7 @@ async function orderRoutes(fastify) {
     }, orderController.createOrder);
     // Update order status
     fastify.patch("/:id/status", {
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Orders'],
             params: OrderParamsSchema,
@@ -107,6 +111,7 @@ async function orderRoutes(fastify) {
     }, orderController.updateOrderStatus);
     // Delete order
     fastify.delete("/:id", {
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Orders'],
             params: OrderParamsSchema,

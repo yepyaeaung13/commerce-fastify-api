@@ -35,12 +35,11 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = userRoutes;
 const typebox_1 = require("@sinclair/typebox");
-const auth_1 = require("../middleware/auth");
 const UserController = __importStar(require("../controllers/users"));
 async function userRoutes(fastify) {
     // Get all users (protected, admin only)
     fastify.get('/', {
-        preHandler: [auth_1.authenticate],
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Users'],
             querystring: typebox_1.Type.Object({
@@ -51,7 +50,7 @@ async function userRoutes(fastify) {
     }, UserController.getUsers);
     // Get user by ID (protected)
     fastify.get('/:id', {
-        preHandler: [auth_1.authenticate],
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Users'],
             params: typebox_1.Type.Object({
@@ -59,8 +58,17 @@ async function userRoutes(fastify) {
             }),
         },
     }, UserController.getUserById);
+    fastify.post('/login', {
+        schema: {
+            tags: ['Users'],
+            body: typebox_1.Type.Object({
+                email: typebox_1.Type.String({ format: 'email' }),
+                password: typebox_1.Type.String({ minLength: 8, maxLength: 100 }),
+            }),
+        },
+    }, UserController.loginUser);
     // Create new user (public - registration)
-    fastify.post('/', {
+    fastify.post('/register', {
         schema: {
             tags: ['Users'],
             body: typebox_1.Type.Object({
@@ -74,9 +82,16 @@ async function userRoutes(fastify) {
             }),
         },
     }, UserController.createUser);
+    // Refresh access token (public)
+    fastify.post('/refresh-token', {
+        preHandler: [fastify.authenticate],
+        schema: {
+            tags: ['Users'],
+        }
+    }, UserController.refreshAccessToken);
     // Update user (protected)
     fastify.put('/:id', {
-        preHandler: [auth_1.authenticate],
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Users'],
             params: typebox_1.Type.Object({
@@ -96,7 +111,7 @@ async function userRoutes(fastify) {
     }, UserController.updateUser);
     // Delete user (protected, admin only)
     fastify.delete('/:id', {
-        preHandler: [auth_1.authenticate],
+        preHandler: [fastify.authenticate],
         schema: {
             tags: ['Users'],
             params: typebox_1.Type.Object({

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const client_1 = require("@prisma/client");
+const helpers_1 = require("../utils/helpers");
 const prisma = new client_1.PrismaClient();
 class UserService {
     async findAll(params) {
@@ -27,10 +28,19 @@ class UserService {
             where: { email }
         });
     }
-    async findUserByEmail(email) {
-        return prisma.user.findUnique({
+    async login(email, password) {
+        const user = await prisma.user.findUnique({
             where: { email }
         });
+        if (!user) {
+            return null;
+        }
+        // Assuming you have a method to verify the password
+        const isValidPassword = await (0, helpers_1.comparePasswords)(password, user.password);
+        if (!isValidPassword) {
+            return null;
+        }
+        return user;
     }
     async create(data) {
         return prisma.user.create({

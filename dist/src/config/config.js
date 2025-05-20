@@ -8,12 +8,15 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 exports.config = {
     port: process.env.PORT,
-    jwtSecret: process.env.JWT_SECRET,
+    jwtAccessSecret: process.env.JWT_ACCESS_SECRET,
+    jwtRefreshSecret: process.env.JWT_REFRESH_SECRET,
+    jwtAccessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
+    jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
     database: {
         url: process.env.DATABASE_URL,
     },
     cors: {
-        origin: process.env.CORS_ORIGIN,
+        origin: true,
         credentials: true
     },
     pagination: {

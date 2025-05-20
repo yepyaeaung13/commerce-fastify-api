@@ -6,5 +6,8 @@ export declare const createPagination: (params: PaginationParams) => {
     take: number;
     page: number;
 };
-export declare const formatResponse: <T>(data: T, error?: string, meta?: ApiResponse<T>["meta"]) => ApiResponse<T>;
+export declare const successResponse: <T>(data: T, message?: string) => ApiResponse<T>;
+export declare const successResponseWithMeta: <T>(data: T, meta?: ApiResponse<T>["meta"], message?: string) => ApiResponse<T>;
+export declare const errorResponse: <T>(error: string) => ApiResponse<T>;
 export declare const sanitizeUser: (user: any) => any;
+export declare const generateToken: (user: any, fastify: any) => Promise<string>;

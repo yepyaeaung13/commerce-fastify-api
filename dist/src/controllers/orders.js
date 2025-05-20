@@ -15,14 +15,14 @@ async function getOrders(request, reply) {
         const result = userId
             ? await orderService.findByUserId(userId, pagination)
             : await orderService.findAll(pagination);
-        return reply.send((0, helpers_1.formatResponse)(result.data, undefined, {
+        return reply.send((0, helpers_1.successResponseWithMeta)(result.data, {
             page: pagination.page,
             limit: pagination.take,
             total: result.total
-        }));
+        }, 'Orders retrieved successfully'));
     }
     catch (error) {
-        return reply.status(500).send((0, helpers_1.formatResponse)(null, error.message));
+        return reply.status(500).send((0, helpers_1.errorResponse)(error.message));
     }
 }
 async function getOrderById(request, reply) {
@@ -30,12 +30,12 @@ async function getOrderById(request, reply) {
         const { id } = request.params;
         const order = await orderService.findById(id);
         if (!order) {
-            return reply.status(404).send((0, helpers_1.formatResponse)(null, 'Order not found'));
+            return reply.status(404).send((0, helpers_1.errorResponse)('Order not found'));
         }
-        return reply.send((0, helpers_1.formatResponse)(order));
+        return reply.send((0, helpers_1.successResponse)(order, 'Order retrieved successfully'));
     }
     catch (error) {
-        return reply.status(500).send((0, helpers_1.formatResponse)(null, error.message));
+        return reply.status(500).send((0, helpers_1.errorResponse)(error.message));
     }
 }
 async function createOrder(request, reply) {
@@ -46,10 +46,10 @@ async function createOrder(request, reply) {
             items: orderData.items,
             address: orderData.address
         });
-        return reply.status(201).send((0, helpers_1.formatResponse)(order));
+        return reply.status(201).send((0, helpers_1.successResponse)(order, 'Order created successfully'));
     }
     catch (error) {
-        return reply.status(500).send((0, helpers_1.formatResponse)(null, error.message));
+        return reply.status(500).send((0, helpers_1.errorResponse)(error.message));
     }
 }
 async function updateOrderStatus(request, reply) {
@@ -57,10 +57,10 @@ async function updateOrderStatus(request, reply) {
         const { id } = request.params;
         const { status } = request.body;
         const order = await orderService.update(id, { status });
-        return reply.send((0, helpers_1.formatResponse)(order));
+        return reply.send((0, helpers_1.successResponse)(order, 'Order status updated successfully'));
     }
     catch (error) {
-        return reply.status(500).send((0, helpers_1.formatResponse)(null, error.message));
+        return reply.status(500).send((0, helpers_1.errorResponse)(error.message));
     }
 }
 async function deleteOrder(request, reply) {
@@ -69,13 +69,13 @@ async function deleteOrder(request, reply) {
         // Check if order exists
         const existingOrder = await orderService.findById(id);
         if (!existingOrder) {
-            return reply.status(404).send((0, helpers_1.formatResponse)(null, 'Order not found'));
+            return reply.status(404).send((0, helpers_1.errorResponse)('Order not found'));
         }
         await orderService.delete(id);
-        return reply.send((0, helpers_1.formatResponse)(null));
+        return reply.send((0, helpers_1.successResponse)({}, 'Order deleted successfully'));
     }
     catch (error) {
-        return reply.status(500).send((0, helpers_1.formatResponse)(null, error.message));
+        return reply.status(500).send((0, helpers_1.errorResponse)(error.message));
     }
 }
 //# sourceMappingURL=orders.js.map
